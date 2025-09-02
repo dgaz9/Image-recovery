@@ -3,7 +3,7 @@ just a simple stenography tool....
 
 A browser-based steganography tool that hides and reveals secret messages within ordinary images. No software installation required - just pure HTML/CSS/JavaScript magic.
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-GitHub_Pages-success?style=for-the-badge)](https://yourusername.github.io/steg-and-tell)
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-GitHub_Pages-success?style=for-the-badge)](https://dgaz9.github.io/Pickle-Rick-s-Pixel-Trick/)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![No Dependencies](https://img.shields.io/badge/Dependencies-None-brightgreen?style=for-the-badge)](https://github.com/yourusername/steg-and-tell)
@@ -19,19 +19,10 @@ A browser-based steganography tool that hides and reveals secret messages within
 - 📥 **Download Support** - Save your encoded images as PNG files
 - ⚡ **Lightning Fast** - Vanilla JavaScript for maximum performance
 
-## 🎬 Demo
-
-**Before (Original Image):**
-![Original Image](demo/original.jpg)
-
-**After (Contains Hidden Message):**  
-![Encoded Image](demo/encoded.png)
-*Looks identical, but contains the message: "This is a secret message!"*
-
 ## 🚀 Quick Start
 
 ### Option 1: Use the Live Version
-Visit **[yourusername.github.io/steg-and-tell](https://yourusername.github.io/steg-and-tell)** and start hiding messages immediately!
+Visit **[[https://dgaz9.github.io/Pickle-Rick-s-Pixel-Trick/]](https://dgaz9.github.io/Pickle-Rick-s-Pixel-Trick/)** and start hiding messages immediately!
 
 ### Option 2: Deploy Your Own
 
