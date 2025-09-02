@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Steganography Tool - Hide & Reveal Messages</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            padding: 40px;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .mode-buttons {
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 12px;
+            display: flex;
+        }
+        
+        .mode-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .mode-btn.active {
+            background: #10b981;
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .mode-btn.encode.active {
+            background: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .upload-area {
+            border: 3px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            border-color: #3b82f6;
+            background: #f8fafc;
+        }
+        
+        .file-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+        
+        .file-input::-webkit-file-upload-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 12px;
+        }
+        
+        .message-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            resize: none;
+            margin-bottom: 20px;
+        }
+        
+        .message-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .action-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .decode-btn {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .decode-btn:hover:not(:disabled) {
+            background: linear-gradient(45deg, #059669, #047857);
+            transform: translateY(-2px);
+        }
+        
+        .encode-btn {
+            background: linear-gradient(45deg, #3b82f6, #2563eb);
+            color: white;
+        }
+        
+        .encode-btn:hover:not(:disabled) {
+            background: linear-gradient(45deg, #2563eb, #1d4ed8);
+            transform: translateY(-2px);
+        }
+        
+        .action-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+        
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+        
+        .result {
+            background: linear-gradient(45deg, #d1fae5, #ecfdf5);
+            border: 3px solid #10b981;
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 30px;
+        }
+        
+        .result-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #065f46;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .result-message {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            color: #374151;
+            border: 2px solid #10b981;
+        }
+        
+        .download-btn {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .download-btn:hover {
+            background: linear-gradient(45deg, #059669, #047857);
+            transform: translateY(-2px);
+        }
+        
+        .preview {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .preview img {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .instructions {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+        
+        .instructions h3 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: #1f2937;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            color: #4b5563;
+        }
+        
+        .warning {
+            background: #fef3cd;
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+            color: #92400e;
+            font-weight: 600;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🔐 Steganography Tool</h1>
+        <p class="subtitle">Hide & Reveal Secret Messages in Images</p>
+        
+        <div class="mode-selector">
+            <div class="mode-buttons">
+                <button class="mode-btn decode active" onclick="setMode('decode')">
+                    🔍 Decode Message
+                </button>
+                <button class="mode-btn encode" onclick="setMode('encode')">
+                    ✍️ Hide Message
+                </button>
+            </div>
+        </div>
+        
+        <div id="status" class="status hidden"></div>
+        
+        <div class="upload-area">
+            <input type="file" id="imageInput" class="file-input" accept="image/*" onchange="handleImageUpload(event)">
+            <p style="color: #6b7280; margin-top: 8px;">
+                ⚠️ Important: Upload the original image file - screenshots won't work!
+            </p>
+        </div>
+        
+        <div id="decodeSection">
+            <button class="action-btn decode-btn" id="decodeBtn" onclick="decodeMessage()" disabled>
+                🔍 Reveal Hidden Message
+            </button>
+        </div>
+        
+        <div id="encodeSection" class="hidden">
+            <textarea id="messageInput" class="message-input" rows="3" placeholder="Enter your secret message here...">I break the stretch between the counts at dawn</textarea>
+            <button class="action-btn encode-btn" id="encodeBtn" onclick="encodeMessage()" disabled>
+                🔐 Hide Message in Image
+            </button>
+        </div>
+        
+        <div id="result" class="result hidden">
+            <div class="result-title">🎉 Secret Message Revealed!</div>
+            <div class="result-message" id="decodedMessage"></div>
+            <p style="text-align: center; margin-top: 16px; color: #065f46; font-weight: 600;">
+                📝 Hidden message successfully decoded from the image.
+            </p>
+        </div>
+        
+        <div id="downloadSection" class="hidden" style="text-align: center; margin-top: 30px;">
+            <button class="download-btn" onclick="downloadImage()">
+                📥 Download Encoded Image
+            </button>
+            <p style="color: #059669; margin-top: 12px; font-weight: 600;">
+                Save as PNG format to preserve the hidden message!
+            </p>
+        </div>
+        
+        <div id="imagePreview" class="preview hidden">
+            <h3>📷 Uploaded Image</h3>
+            <img id="previewImg" alt="Uploaded image">
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 How to Use This Tool</h3>
+            <div id="decodeInstructions">
+                <h4 style="color: #10b981; font-weight: 600; margin-bottom: 8px;">🔍 To Reveal Hidden Messages:</h4>
+                <ol>
+                    <li>Upload an image file that contains a hidden message</li>
+                    <li>Click "Reveal Hidden Message" button</li>
+                    <li>The secret message will appear below</li>
+                    <li>Copy or save the revealed message as needed</li>
+                </ol>
+                <div class="warning">
+                    ⚠️ Important: You must upload the original image file - screenshots or copied images won't work!
+                </div>
+            </div>
+            <div id="encodeInstructions" class="hidden">
+                <h4 style="color: #3b82f6; font-weight: 600; margin-bottom: 8px;">🔐 To Hide Messages:</h4>
+                <ol>
+                    <li>Upload your cover image (PNG recommended for best results)</li>
+                    <li>Type your secret message in the text area</li>
+                    <li>Click "Hide Message in Image"</li>
+                    <li>Download the encoded image</li>
+                    <li>Share the encoded image with intended recipients</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    
+    <canvas id="canvas" style="display: none;"></canvas>
+    
+    <script>
+        let currentMode = 'decode';
+        let uploadedImage = null;
+        let encodedImageBlob = null;
+        
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // Update button states
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.mode-btn.${mode}`).classList.add('active');
+            
+            // Show/hide sections
+            if (mode === 'decode') {
+                document.getElementById('decodeSection').classList.remove('hidden');
+                document.getElementById('encodeSection').classList.add('hidden');
+                document.getElementById('decodeInstructions').classList.remove('hidden');
+                document.getElementById('encodeInstructions').classList.add('hidden');
+            } else {
+                document.getElementById('decodeSection').classList.add('hidden');
+                document.getElementById('encodeSection').classList.remove('hidden');
+                document.getElementById('decodeInstructions').classList.add('hidden');
+                document.getElementById('encodeInstructions').classList.remove('hidden');
+            }
+            
+            // Clear results
+            clearResults();
+        }
+        
+        function showStatus(message, type = 'success') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            statusEl.classList.remove('hidden');
+            
+            setTimeout(() => {
+                statusEl.classList.add('hidden');
+            }, 8000);
+        }
+        
+        function clearResults() {
+            document.getElementById('result').classList.add('hidden');
+            document.getElementById('downloadSection').classList.add('hidden');
+        }
+        
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                showStatus('Please upload a valid image file', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    uploadedImage = img;
+                    
+                    // Show preview
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('imagePreview').classList.remove('hidden');
+                    
+                    // Enable buttons
+                    document.getElementById('decodeBtn').disabled = false;
+                    document.getElementById('encodeBtn').disabled = false;
+                    
+                    showStatus('Image loaded! Ready to proceed.');
+                    clearResults();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function stringToBinary(str) {
+            return str.split('').map(char => 
+                char.charCodeAt(0).toString(2).padStart(8, '0')
+            ).join('') + '1111111111111110'; // End delimiter
+        }
+        
+        function binaryToString(binary) {
+            const endDelimiter = '1111111111111110';
+            const endIndex = binary.indexOf(endDelimiter);
+            if (endIndex === -1) return '';
+            
+            const messageBinary = binary.substring(0, endIndex);
+            const chars = [];
+            
+            for (let i = 0; i < messageBinary.length; i += 8) {
+                const byte = messageBinary.substr(i, 8);
+                if (byte.length === 8) {
+                    chars.push(String.fromCharCode(parseInt(byte, 2)));
+                }
+            }
+            return chars.join('');
+        }
+        
+        function decodeMessage() {
+            if (!uploadedImage) {
+                showStatus('Please upload an image first', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('decodeBtn');
+            btn.innerHTML = '<span class="spinner"></span>Searching for hidden message...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                try {
+                    const canvas = document.getElementById('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    canvas.width = uploadedImage.width;
+                    canvas.height = uploadedImage.height;
+                    ctx.drawImage(uploadedImage, 0, 0);
+                    
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const data = imageData.data;
+                    
+                    let binaryMessage = '';
+                    const endDelimiter = '1111111111111110';
+                    
+                    for (let i = 0; i < data.length && binaryMessage.length < 100000; i++) {
+                        binaryMessage += (data[i] & 1).toString();
+                        
+                        if (binaryMessage.length >= endDelimiter.length) {
+                            const lastBits = binaryMessage.slice(-endDelimiter.length);
+                            if (lastBits === endDelimiter) {
+                                break;
+                            }
+                        }
+                    }
+                    
+                    const decoded = binaryToString(binaryMessage);
+                    
+                    if (decoded) {
+                        document.getElementById('decodedMessage').textContent = `"${decoded}"`;
+                        document.getElementById('result').classList.remove('hidden');
+                        showStatus('🎉 Hidden message revealed! Message successfully decoded.');
+                    } else {
+                        showStatus('❌ No hidden message found. Make sure you uploaded a file that contains an encoded message.', 'error');
+                    }
+                    
+                } catch (error) {
+                    showStatus(`Decoding failed: ${error.message}`, 'error');
+                } finally {
+                    btn.innerHTML = '🔍 Reveal Hidden Message';
+                    btn.disabled = false;
+                }
+            }, 500);
+        }
+        
+        function encodeMessage() {
+            if (!uploadedImage) {
+                showStatus('Please upload an image first', 'error');
+                return;
+            }
+            
+            const message = document.getElementById('messageInput').value.trim();
+            if (!message) {
+                showStatus('Please enter a message to hide', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('encodeBtn');
+            btn.innerHTML = '<span class="spinner"></span>Hiding message...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                try {
+                    const canvas = document.getElementById('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    canvas.width = uploadedImage.width;
+                    canvas.height = uploadedImage.height;
+                    ctx.drawImage(uploadedImage, 0, 0);
+                    
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const data = imageData.data;
+                    const binaryMessage = stringToBinary(message);
+                    
+                    if (binaryMessage.length > data.length) {
+                        throw new Error('Message is too long for this image');
+                    }
+                    
+                    for (let i = 0; i < binaryMessage.length; i++) {
+                        const bit = parseInt(binaryMessage[i]);
+                        data[i] = (data[i] & 0xFE) | bit;
+                    }
+                    
+                    ctx.putImageData(imageData, 0, 0);
+                    
+                    canvas.toBlob((blob) => {
+                        encodedImageBlob = blob;
+                        document.getElementById('downloadSection').classList.remove('hidden');
+                        showStatus(`✅ Message "${message}" encoded successfully! Download the image below.`);
+                    }, 'image/png');
+                    
+                } catch (error) {
+                    showStatus(`Encoding failed: ${error.message}`, 'error');
+                } finally {
+                    btn.innerHTML = '🔐 Hide Message in Image';
+                    btn.disabled = false;
+                }
+            }, 500);
+        }
+        
+        function downloadImage() {
+            if (!encodedImageBlob) return;
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(encodedImageBlob);
+            link.download = 'encoded_treasure_image.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
