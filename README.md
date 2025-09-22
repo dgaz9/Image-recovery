@@ -1,4 +1,4 @@
-# Pickle-Ricks-Pixel-Trick
+# Woctor's Image Recovery
 just a simple stenography tool....
 
 A browser-based steganography tool that hides and reveals secret messages within ordinary images. No software installation required - just pure HTML/CSS/JavaScript magic.
